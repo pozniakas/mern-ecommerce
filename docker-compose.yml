@@ -3,6 +3,10 @@ services:
   client:
     build: client
     container_name: client
+    depends_on:
+      - server
+    volumes:
+      - './client:/usr/src/app'
     ports:
       - '8080:8080'
 
