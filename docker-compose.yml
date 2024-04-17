@@ -1,0 +1,47 @@
+version: '3'
+services:
+  client:
+    build: client
+    container_name: client
+    ports:
+      - '8080:8080'
+
+  server:
+    build: server
+    container_name: server
+    environment:
+      - PORT=3000
+      - BASE_API_URL=api
+      - CLIENT_URL=http://localhost:8080
+      - JWT_SECRET=update_your_JWT_secret
+      - MONGO_URI=mongodb://admin:example@mongo:27017/mydatabase?authSource=admin
+    ports:
+      - '4000:3000'
+    depends_on:
+      - mongo
+    volumes:
+      - './server:/usr/src/app'
+    networks:
+      - app-network
+
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=mydatabase
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+
+volumes:
+  mongodb_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
